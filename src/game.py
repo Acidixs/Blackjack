@@ -4,7 +4,7 @@ import time
 class Blackjack:
     def __init__(self):
         self.cardDeck = [1,2,3,4,5,6,7,8,9,10,10,10,10]*4
-        self.playerHand = []
+        self.playerHand = [2, 2]
         self.dealerHand = []
 
     def shuffle_cards(self):
@@ -38,15 +38,19 @@ class Blackjack:
         elif dealerScore > playerScore:
             return "dealer"
 
+    def split(self):
+        self.playerHand = {"playerhand": {"hand1": self.playerHand[0], "hand2": self.playerHand[1]}}
+
     def start(self):
+
         self.shuffle_cards()
         card = self.draw_card
 
         dealerSum = self.get_dealer_hand
         playerSum = self.get_player_hand
 
-        self.update_hand("player", self.draw_card())
-        self.update_hand("dealer", self.draw_card())
+        # self.update_hand("player", self.draw_card())
+        # self.update_hand("dealer", self.draw_card())
 
         print("player:", playerSum())
         print("dealer:", dealerSum())
@@ -54,6 +58,12 @@ class Blackjack:
         playerTurn = True
 
         while playerTurn:
+            if len(self.playerHand) == 2:
+                if self.playerHand[0] == self.playerHand[1]:
+                    split = input("Do you want to split: ")
+                    if split.lower() == "yes":
+                        self.split()
+
             choice = input("Hit or Stand: ")
             if choice == "Hit":
                 self.update_hand("player", card())
@@ -78,6 +88,8 @@ class Blackjack:
                         return
                     elif self.hit_blackjack(dealerSum()):
                         print("Dealer hit blackjack")
+
+            
 
                 winner = self.get_winner(playerSum(), dealerSum())
                 if winner == "player":
