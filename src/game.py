@@ -29,12 +29,14 @@ class Blackjack:
     def start(self):
         self.shuffle_cards()
 
+        dealerSum = self.get_dealer_hand
+        playerSum = self.get_player_hand
+
         self.update_hand("player", self.draw_card())
         self.update_hand("dealer", self.draw_card())
 
-        print("player:", sum(self.playerHand))
-        print("dealer:", sum(self.dealerHand))
-        print("penis")
+        print("player:", playerSum())
+        print("dealer:", dealerSum())
         
         playing = True
 
@@ -42,8 +44,8 @@ class Blackjack:
             choice = input("Hit or Stand: ")
             if choice == "Hit":
                 self.update_hand("player", self.draw_card())
-                print(sum(self.playerHand))
-                if sum(self.playerHand) > 21:
+                print(playerSum())
+                if (playerSum()) > 21:
                     print("Bust")
                     print("Dealer wins")
                     playing = False
@@ -52,27 +54,19 @@ class Blackjack:
                 for _ in range(2):
                     time.sleep(0.5)
                     self.update_hand("dealer", self.draw_card())
-                    print("dealer:", sum(self.dealerHand))
-                    if sum(self.dealerHand) == 17:
+                    print("dealer:", dealerSum())
+                    if (dealerSum()) == 17:
                         playing = False
                         break
-                    elif sum(self.dealerHand) > 21:
+                    elif (dealerSum()) > 21:
                         print("Bust")
                         print("Player wins")
                         playing = False
                         break
-                    elif sum(self.dealerHand) == 21:
+                    elif (dealerSum()) == 21:
                         print("Blackjack")
                         playing = False
                         break
-
-
-        if sum(self.dealerHand) > sum(self.playerHand):
-            print("Dealer wins")
-        elif sum(self.dealerHand) < sum(self.playerHand):
-            print("Player wins")
-        elif sum(self.dealerHand) == sum(self.playerHand):
-            print("Push!")
 
 
 if __name__ == "__main__":
