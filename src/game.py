@@ -26,6 +26,12 @@ class Blackjack:
     def get_dealer_hand(self):
         return sum(self.dealerHand)
 
+    def bust(self, score):
+        return score > 21
+
+    def hit_blackjack(self, score):
+        return score == 21
+
     def start(self):
         self.shuffle_cards()
 
@@ -45,28 +51,26 @@ class Blackjack:
             if choice == "Hit":
                 self.update_hand("player", self.draw_card())
                 print(playerSum())
-                if (playerSum()) > 21:
+                if self.bust(playerSum()):
                     print("Bust")
                     print("Dealer wins")
                     playing = False
                     break
+                elif self.hit_blackjack(playerSum()):
+                    print("Player hit blackjack")
+
             elif choice == "Stand":
-                for _ in range(2):
+                while dealerSum() < 17:
                     time.sleep(0.5)
                     self.update_hand("dealer", self.draw_card())
                     print("dealer:", dealerSum())
-                    if (dealerSum()) == 17:
-                        playing = False
-                        break
-                    elif (dealerSum()) > 21:
+                    if self.bust(dealerSum()):
                         print("Bust")
-                        print("Player wins")
                         playing = False
                         break
-                    elif (dealerSum()) == 21:
-                        print("Blackjack")
-                        playing = False
-                        break
+                    elif self.hit_blackjack(dealerSum()):
+                        print("Dealer hit blackjack")
+
 
 
 if __name__ == "__main__":
