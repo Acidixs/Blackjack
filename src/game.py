@@ -38,6 +38,10 @@ class Blackjack:
         elif dealerScore > playerScore:
             return "dealer"
 
+    def can_split(self):
+        hand = self.playerHand
+        return hand[0] == hand[1]
+
     def start(self):
         self.shuffle_cards()
         card = self.draw_card
@@ -54,6 +58,10 @@ class Blackjack:
         playerTurn = True
 
         while playerTurn:
+            if len(self.playerHand) == 2:
+                if self.can_split():
+                    pass # suggest to player to split cards
+
             choice = input("Hit or Stand: ")
             if choice == "Hit":
                 self.update_hand("player", card())
