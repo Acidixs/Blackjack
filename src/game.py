@@ -1,10 +1,11 @@
 import random
 import time
+from colors import red, green
 
 class Blackjack:
     def __init__(self):
         self.cardDeck = [1,2,3,4,5,6,7,8,9,10,10,10,10]*4
-        self.playerHand = []
+        self.playerHand = [2,2]
         self.dealerHand = []
 
     def shuffle_cards(self):
@@ -42,6 +43,40 @@ class Blackjack:
         hand = self.playerHand
         return hand[0] == hand[1]
 
+    def split_cards(self):
+        hand = {1: [self.playerHand[0]], 2: [self.playerHand[1]]}
+        return hand
+
+    def play_split(self):
+        hand = self.split_cards()
+        print("{0}, {1}".format(sum(hand[1]), sum(hand[2])))
+        active = hand[1]
+
+        while True:
+            choice = input("Hit or Stand: ")
+            if choice == "Hit":
+                card = self.draw_card()
+                active.append(card)
+                if self.bust(sum(active)):
+                    print("Bust")
+                    print(red(str(sum(active))))
+                    if active == hand[2]:
+                        return
+                    else:
+                        active = hand[2]
+                if self.hit_blackjack(sum(active)):
+                    print("Blackjack!")
+                print("{0}, {1}".format(sum(hand[1]), sum(hand[2])))
+            elif choice == "Stand":
+                if active == hand[2]:
+                    print("{0}, {1}".format(sum(hand[1]), sum(hand[2])))
+                    return
+                else:
+                    active = hand[2]
+            
+
+            
+    
     def start(self):
         self.shuffle_cards()
         card = self.draw_card
@@ -60,7 +95,7 @@ class Blackjack:
         while playerTurn:
             if len(self.playerHand) == 2:
                 if self.can_split():
-                    pass # suggest to player to split cards
+                    self.play_split()
 
             choice = input("Hit or Stand: ")
             if choice == "Hit":
@@ -101,5 +136,5 @@ class Blackjack:
 
 if __name__ == "__main__":
     game = Blackjack()
-    game.start()
+    game.play_split()
     
