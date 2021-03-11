@@ -1,6 +1,7 @@
 import random
 import time
 from colors import red, green
+import sys
 
 class Blackjack:
     def __init__(self):
@@ -27,10 +28,10 @@ class Blackjack:
     def get_dealer_hand(self):
         return sum(self.dealerHand)
 
-    def bust(self, score):
+    def is_bust(self, score):
         return score > 21
 
-    def hit_blackjack(self, score):
+    def is_blackjack(self, score):
         return score == 21
 
     def get_winner(self, playerScore, dealerScore):
@@ -39,9 +40,12 @@ class Blackjack:
         elif dealerScore > playerScore:
             return "dealer"
 
-    def can_split(self):
+    def is_split(self):
         hand = self.playerHand
-        return hand[0] == hand[1]
+        if len(hand) == 2 and hand[0] == hand[1]:
+            return True
+        else:
+            return False
 
     def split_cards(self):
         hand = {1: [self.playerHand[0]], 2: [self.playerHand[1]]}
@@ -51,35 +55,76 @@ class Blackjack:
         hand = self.split_cards()
         print("{0}, {1}".format(sum(hand[1]), sum(hand[2])))
         active = hand[1]
+        total = sum([x + y for x, y in zip(hand[1], hand[2])])
 
-        while True:
-            choice = input("Hit or Stand: ")
-            if choice == "Hit":
+
+        while total < 21:
+            choice = input("Hit or Stand (split): ").lower()
+            if choice == "hit":
                 card = self.draw_card()
                 active.append(card)
-                if self.bust(sum(active)):
+                print("{0}, {1}".format(sum(hand[1]), sum(hand[2])))
+                if self.is_bust(sum(active)):
                     print("Bust")
                     print(red(str(sum(active))))
                     if active == hand[2]:
                         return
                     else:
                         active = hand[2]
-                if self.hit_blackjack(sum(active)):
+                if self.is_blackjack(sum(active)):
                     print("Blackjack!")
-                print("{0}, {1}".format(sum(hand[1]), sum(hand[2])))
-            elif choice == "Stand":
+            elif choice == "stand":
                 if active == hand[2]:
                     print("{0}, {1}".format(sum(hand[1]), sum(hand[2])))
                     return
                 else:
                     active = hand[2]
-            
 
-            
-    
+    def ask_split(self):
+        doSplit = input("Do you want to split: ").lower()
+        if doSplit == "yes":
+            self.play_split()
+        elif doSplit == "no":
+            return False
+        else:
+            self.ask_split()
+
+
+    def player_turn(self):
+        playerSum = self.get_player_hand
+        while playerSum() < 21:
+            if self.is_split():
+                self.ask_split()
+            else:
+                choice = input("hit or stand: ").lower()
+                if choice == "hit":
+                    self.update_hand("player", self.draw_card())
+                    print(f"Player: {playerSum()}")
+                    if self.is_bust(playerSum()):
+                        print("Player Bust")
+                        print("Dealer wins")
+                        return sys.exit(1)
+                    elif self.is_blackjack(playerSum()):
+                        print("Player hit blackjack")
+                elif choice == "stand":
+                    return False
+
+    def dealer_turn(self):
+        dealerSum = self.get_dealer_hand
+        while dealerSum() < 17:
+            time.sleep(0.5)
+            self.update_hand("dealer", self.draw_card())
+            print("dealer:", dealerSum())
+            if self.is_bust(dealerSum()):
+                print("Dealer Bust")
+                return sys.exit(1)
+            elif self.is_blackjack(dealerSum()):
+                print("Dealer hit blackjack")
+        return
+
+
     def start(self):
         self.shuffle_cards()
-        card = self.draw_card
 
         dealerSum = self.get_dealer_hand
         playerSum = self.get_player_hand
@@ -90,51 +135,17 @@ class Blackjack:
         print("player:", playerSum())
         print("dealer:", dealerSum())
         
-        playerTurn = True
+        self.player_turn()
+        self.dealer_turn()
 
-        while playerTurn:
-            if len(self.playerHand) == 2:
-                if self.can_split():
-                    self.play_split()
-
-            choice = input("Hit or Stand: ")
-            if choice == "Hit":
-                self.update_hand("player", card())
-                print(playerSum())
-                if self.bust(playerSum()):
-                    print("Player Bust")
-                    print("Dealer wins")
-                    playerTurn = False
-                    return
-                elif self.hit_blackjack(playerSum()):
-                    print("Player hit blackjack")
-
-            elif choice == "Stand":
-                playerTurn = False
-                while dealerSum() < 17:
-                    time.sleep(0.5)
-                    self.update_hand("dealer", card())
-                    print("dealer:", dealerSum())
-                    if self.bust(dealerSum()):
-                        print("Dealer Bust")
-                        playerTurn = False
-                        return
-                    elif self.hit_blackjack(dealerSum()):
-                        print("Dealer hit blackjack")
-
-                winner = self.get_winner(playerSum(), dealerSum())
-                if winner == "player":
-                    print("Player wins!")
-                    return
-                elif winner == "dealer":
-                    print("Dealer wins!")
-                    return
-
-
-
+        winner = self.get_winner(playerSum(), dealerSum())
+        if winner == None:
+            print("Push! No winner")
+        elif winner:
+            print(f"{winner} wins!")
 
 
 if __name__ == "__main__":
     game = Blackjack()
-    game.play_split()
+    game.start()
     
