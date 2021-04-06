@@ -49,6 +49,8 @@ class Game(CardHand):
         player = CardHand("Aleksander", False)
         dealer = CardHand("Mike", True)
         self.shuffle_cards()
+        player.hit()
+        player.show_hand()
         dealer.hit()
         dealer.show_hand()
         
