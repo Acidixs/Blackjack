@@ -1,4 +1,5 @@
 import random
+from datetime import datetime
 
 class CardDeck:
     def __init__(self):
@@ -44,6 +45,11 @@ class Game(CardHand):
         super().__init__("name", "isDealer")
         self.winner = None
         self.playing = True
+
+    def save_match(self, winner, playerHand, dealerHand):
+        time = datetime.now().replace(microsecond=0)
+        with open("logs.txt", "a+") as f:
+            f.write(f"[{time}] Winner: {winner} - player hand: {playerHand} - dealer hand: {dealerHand}\n")
         
     def play(self):
         player = CardHand("Aleksander", False)
@@ -97,6 +103,7 @@ class Game(CardHand):
         player.show_hand()
 
         print(f"Winner is {self.winner}")
+        self.save_match(self.winner, player.hand, dealer.hand)
 
 if __name__ == "__main__":
     game = Game()
